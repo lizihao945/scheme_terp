@@ -21,7 +21,6 @@ def scheme_eval(expr, env):
     """
     if expr is None:
         raise SchemeError("Cannot evaluate an undefined expression.")
-
     # Evaluate Atoms
     if scheme_symbolp(expr):
         return env.lookup(expr)
@@ -38,6 +37,7 @@ def scheme_eval(expr, env):
         and first in LOGIC_FORMS):
         return scheme_eval(LOGIC_FORMS[first](rest, env), env)
     elif first == "lambda":
+        print("do_lambda:", rest, env)
         return do_lambda_form(rest, env)
     elif first == "mu":
         return do_mu_form(rest)
@@ -60,6 +60,8 @@ def scheme_apply(procedure, args, env):
         return apply_primitive(procedure, args, env)
     elif isinstance(procedure, LambdaProcedure):
         "*** YOUR CODE HERE ***"
+        frame = env.make_call_frame(procedure.formals, args)
+        return scheme_eval(procedure.body, frame)
     elif isinstance(procedure, MuProcedure):
         "*** YOUR CODE HERE ***"
     else:
@@ -112,7 +114,7 @@ class Frame:
         if symbol in self.bindings:
             return self.bindings[symbol]
         elif self.parent:
-            return self.parent.lookup(self.parent, symbol)
+            return self.parent.lookup(symbol)
         raise SchemeError("unknown identifier: {0}".format(str(symbol)))
 
 
@@ -136,6 +138,10 @@ class Frame:
         """
         frame = Frame(self)
         "*** YOUR CODE HERE ***"
+        if len(formals) != len(vals):
+            raise SchemeError("Too many or too few arguments are given.")
+        for i in range(len(formals)):
+            frame.define(formals[i], vals[i])
         return frame
 
     def define(self, sym, val):
@@ -200,6 +206,7 @@ def do_lambda_form(vals, env):
     formals = vals[0]
     check_formals(formals)
     "*** YOUR CODE HERE ***"
+    print("formals :", vals[0], "; vals:", vals[1])
     if len(vals) == 2:
         return LambdaProcedure(formals, vals[1], env)
     else:
@@ -219,12 +226,16 @@ def do_define_form(vals, env):
     if scheme_symbolp(target):
         check_form(vals, 2, 2)
         "*** YOUR CODE HERE ***"
-        env.define(vals[0], vals[1])
-        scheme_eval(vals[0], env)
-        return scheme_eval(vals[1], env)
+        env.define(vals[0], scheme_eval(vals[1], env))
+        return vals[0]
     elif isinstance(target, Pair):
         "*** YOUR CODE HERE ***"
-        
+        if not scheme_symbolp(target.first):
+            raise SchemeError("bad argument to define")
+        tmp = Pair(target.second, vals.second)
+        env.define(target.first, do_lambda_form(tmp, env))
+        #print(vals, ":", target.second, "-->", tmp[1], ":", LambdaProcedure(target.second, tmp[1], env))
+        return target.first
     else:
         raise SchemeError("bad argument to define")
 
@@ -304,8 +315,6 @@ def do_begin_form(vals, env):
     """Evaluate begin form with parameters VALS in environment ENV."""
     check_form(vals, 1)
     "*** YOUR CODE HERE ***"
-    flag = False
-    print(vals)
     while vals.second != nil:
         scheme_eval(vals.first, env)
         vals = vals.second
@@ -343,6 +352,20 @@ def check_formals(formals):
     >>> check_formals(read_line("(a b c)"))
     """
     "*** YOUR CODE HERE ***"
+    if formals == nil:
+        return
+    lst = []
+    while formals.second != nil:
+        if formals.first is Pair:
+            raise SchemeError
+        if not scheme_symbolp(formals.first) or formals.first in lst:
+            raise SchemeError
+        lst.append(formals.first)
+        formals = formals.second
+    if formals.first is Pair:
+        raise SchemeError
+    if not scheme_symbolp(formals.first) or formals.first in lst:
+        raise SchemeError
 
 ##################
 # Tail Recursion #
@@ -353,7 +376,6 @@ def scheme_optimized_eval(expr, env):
     while True:
         if expr is None:
             raise SchemeError("Cannot evaluate an undefined expression.")
-
         # Evaluate Atoms
         if scheme_symbolp(expr):
             return env.lookup(expr)

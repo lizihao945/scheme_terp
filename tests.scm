@@ -56,7 +56,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Move the following (exit) line to run additional tests. ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(exit)
+
 
 
 ;;; 1.1.2
@@ -104,7 +104,7 @@ circumference
   (sum-of-squares (+ a 1) (* a 2)))
 (f 5)
 ; expect 136
-
+(exit)
 ;;; 1.1.6
 
 (define (abs x)
