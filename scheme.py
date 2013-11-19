@@ -75,7 +75,18 @@ def apply_primitive(procedure, args, env):
     4
     """
     "*** YOUR CODE HERE ***"
-
+    lst = []
+    while args != nil:
+        lst.append(args.first)
+        args = args.second
+    if procedure.use_env:
+        lst.append(env)
+    try:
+        return procedure.fn(*lst)
+    except TypeError:
+        raise SchemeError
+    
+    
 ################
 # Environments #
 ################
@@ -98,6 +109,10 @@ class Frame:
     def lookup(self, symbol):
         """Return the value bound to SYMBOL.  Errors if SYMBOL is not found."""
         "*** YOUR CODE HERE ***"
+        if symbol in self.bindings:
+            return self.bindings[symbol]
+        elif self.parent:
+            return self.parent.lookup(self.parent, symbol)
         raise SchemeError("unknown identifier: {0}".format(str(symbol)))
 
 
@@ -185,6 +200,10 @@ def do_lambda_form(vals, env):
     formals = vals[0]
     check_formals(formals)
     "*** YOUR CODE HERE ***"
+    if len(vals) == 2:
+        return LambdaProcedure(formals, vals[1], env)
+    else:
+        return LambdaProcedure(formals, Pair('begin', vals.second), env)    
 
 def do_mu_form(vals):
     """Evaluate a mu form with parameters VALS."""
@@ -200,8 +219,12 @@ def do_define_form(vals, env):
     if scheme_symbolp(target):
         check_form(vals, 2, 2)
         "*** YOUR CODE HERE ***"
+        env.define(vals[0], vals[1])
+        scheme_eval(vals[0], env)
+        return scheme_eval(vals[1], env)
     elif isinstance(target, Pair):
         "*** YOUR CODE HERE ***"
+        
     else:
         raise SchemeError("bad argument to define")
 
@@ -209,6 +232,7 @@ def do_quote_form(vals):
     """Evaluate a quote form with parameters VALS."""
     check_form(vals, 1, 1)
     "*** YOUR CODE HERE ***"
+    return vals[0]
 
 
 def do_let_form(vals, env):
@@ -280,6 +304,14 @@ def do_begin_form(vals, env):
     """Evaluate begin form with parameters VALS in environment ENV."""
     check_form(vals, 1)
     "*** YOUR CODE HERE ***"
+    flag = False
+    print(vals)
+    while vals.second != nil:
+        scheme_eval(vals.first, env)
+        vals = vals.second
+    return vals.first
+   
+    
 
 LOGIC_FORMS = {
         "and": do_and_form,
