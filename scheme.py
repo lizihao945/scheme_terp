@@ -343,13 +343,13 @@ def do_cond_form(vals, env):
             test = scheme_eval(clause.first, env)
         if scheme_true(test):
             "*** YOUR CODE HERE ***"
-            if clause.second == nil:
-                return Pair("quote", clause.first)
-            elif clause.second.second == nil:
-                return clause.second.first
+            if clause.second != nil:
+                if clause.second.second == nil:
+                    return clause.second.first
+                else:
+                    return Pair("begin", clause.second)
             else:
-                return Pair('begin', clause.second)
-        print(clause.first, test)
+                return True
     return okay
 
 def do_begin_form(vals, env):
