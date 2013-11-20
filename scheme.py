@@ -274,10 +274,32 @@ def do_if_form(vals, env):
     """Evaluate if form with parameters VALS in environment ENV."""
     check_form(vals, 2, 3)
     "*** YOUR CODE HERE ***"
+    if scheme_eval(vals[0], env) == False:
+        if len(vals) >= 3:
+            return scheme_eval(vals[2], env)
+        else:
+            return okay
+    else:
+        return scheme_eval(vals[1], env)
+    
+    
+    
 
 def do_and_form(vals, env):
     """Evaluate short-circuited and with parameters VALS in environment ENV."""
     "*** YOUR CODE HERE ***"
+    if len(vals) == 0:
+        return True
+    while vals.second != nil:
+        if vals.first == False:
+            return False
+        else:
+            vals = vals.second
+    if scheme_eval(vals.first, env) == False:
+        return False
+    else:
+        return True
+            
 
 def quote(value):
     """Return a Scheme expression quoting the Scheme VALUE.
@@ -293,13 +315,27 @@ def quote(value):
 def do_or_form(vals, env):
     """Evaluate short-circuited or with parameters VALS in environment ENV."""
     "*** YOUR CODE HERE ***"
+    if len(vals) == 0:
+        return False
+    while vals.second != nil:
+        if vals.first == False:
+            return False
+        else:
+            return vals.first
+    if vals.first == False:
+        return False
+    else:
+        return vals.first
+    
 
 def do_cond_form(vals, env):
     """Evaluate cond form with parameters VALS in environment ENV."""
     num_clauses = len(vals)
+    elseflag = False
     for i, clause in enumerate(vals):
         check_form(clause, 1)
         if clause.first == "else":
+            elseflag = True
             if i < num_clauses-1:
                 raise SchemeError("else must be last")
             test = True
@@ -309,6 +345,13 @@ def do_cond_form(vals, env):
             test = scheme_eval(clause.first, env)
         if scheme_true(test):
             "*** YOUR CODE HERE ***"
+            if clause.second == nil:
+                return Pair("quote", clause.first)
+            elif clause.second.second == nil:
+                return clause.second.first
+            else:
+                return Pair('begin', clause.second)
+        print(clause.first, test)
     return okay
 
 def do_begin_form(vals, env):
@@ -376,6 +419,7 @@ def scheme_optimized_eval(expr, env):
     while True:
         if expr is None:
             raise SchemeError("Cannot evaluate an undefined expression.")
+
         # Evaluate Atoms
         if scheme_symbolp(expr):
             return env.lookup(expr)
