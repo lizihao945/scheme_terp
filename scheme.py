@@ -37,7 +37,6 @@ def scheme_eval(expr, env):
         and first in LOGIC_FORMS):
         return scheme_eval(LOGIC_FORMS[first](rest, env), env)
     elif first == "lambda":
-        print("do_lambda:", rest, env)
         return do_lambda_form(rest, env)
     elif first == "mu":
         return do_mu_form(rest)
@@ -60,7 +59,7 @@ def scheme_apply(procedure, args, env):
         return apply_primitive(procedure, args, env)
     elif isinstance(procedure, LambdaProcedure):
         "*** YOUR CODE HERE ***"
-        frame = env.make_call_frame(procedure.formals, args)
+        frame = procedure.env.make_call_frame(procedure.formals, args)
         return scheme_eval(procedure.body, frame)
     elif isinstance(procedure, MuProcedure):
         "*** YOUR CODE HERE ***"
@@ -206,11 +205,10 @@ def do_lambda_form(vals, env):
     formals = vals[0]
     check_formals(formals)
     "*** YOUR CODE HERE ***"
-    print("formals :", vals[0], "; vals:", vals[1])
     if len(vals) == 2:
         return LambdaProcedure(formals, vals[1], env)
     else:
-        return LambdaProcedure(formals, Pair('begin', vals.second), env)    
+        return LambdaProcedure(formals, Pair('begin', vals.second), env)
 
 def do_mu_form(vals):
     """Evaluate a mu form with parameters VALS."""
