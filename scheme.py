@@ -302,10 +302,7 @@ def do_and_form(vals, env):
             return False
         else:
             vals = vals.second
-    if scheme_eval(vals.first, env) == False:
-        return False
-    else:
-        return True
+    return vals.first
             
 
 def quote(value):
@@ -326,7 +323,7 @@ def do_or_form(vals, env):
         return False
     while vals.second != nil:
         if vals.first == False:
-            return False
+            vals = vals.second
         else:
             return vals.first
     if vals.first == False:
