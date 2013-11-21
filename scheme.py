@@ -257,11 +257,8 @@ def do_let_form(vals, env):
     "*** YOUR CODE HERE ***"
     for i in range(len(bindings) -1, -1, -1):
         names = Pair(bindings[i].first, names)
-        values = Pair(bindings[i].second.first, values)
+        values = Pair(scheme_eval(bindings[i].second.first, env), values)
     new_env = env.make_call_frame(names, values)
-    
-    
-    
     
     # Evaluate all but the last expression after bindings, and return the last
     last = len(exprs)-1
