@@ -350,7 +350,7 @@ def do_cond_form(vals, env):
                 else:
                     return Pair("begin", clause.second)
             else:
-                return True
+                return clause.first
     return okay
 
 def do_begin_form(vals, env):
