@@ -297,12 +297,12 @@ def do_and_form(vals, env):
     "*** YOUR CODE HERE ***"
     if len(vals) == 0:
         return True
-    while vals.second != nil:
-        if vals.first == False:
+    tmp = vals.first
+    for x in vals:
+        if scheme_false(scheme_eval(x, env)):
             return False
-        else:
-            vals = vals.second
-    return vals.first
+        tmp = x
+    return tmp
             
 
 def quote(value):
@@ -321,15 +321,10 @@ def do_or_form(vals, env):
     "*** YOUR CODE HERE ***"
     if len(vals) == 0:
         return False
-    while vals.second != nil:
-        if vals.first == False:
-            vals = vals.second
-        else:
-            return vals.first
-    if vals.first == False:
-        return False
-    else:
-        return vals.first
+    for x in vals:
+        if not scheme_false(scheme_eval(x, env)):
+            return x
+    return False
     
 
 def do_cond_form(vals, env):
