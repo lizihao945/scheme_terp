@@ -251,12 +251,18 @@ def do_let_form(vals, env):
     exprs = vals.second
     if not scheme_listp(bindings):
         raise SchemeError("bad bindings list in let form")
-
+    newframe = Frame(None)
     # Add a frame containing bindings
     names, values = nil, nil
     "*** YOUR CODE HERE ***"
+    for i in range(len(bindings) -1, -1, -1):
+        names = Pair(bindings[i].first, names)
+        values = Pair(bindings[i].second.first, values)
     new_env = env.make_call_frame(names, values)
-
+    
+    
+    
+    
     # Evaluate all but the last expression after bindings, and return the last
     last = len(exprs)-1
     for i in range(0, last):
