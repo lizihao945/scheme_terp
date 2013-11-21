@@ -283,11 +283,11 @@ def do_if_form(vals, env):
     "*** YOUR CODE HERE ***"
     if scheme_false(scheme_eval(vals[0], env)):
         if len(vals) >= 3:
-            return scheme_eval(vals[2], env)
+            return vals[2]
         else:
             return okay
     else:
-        return scheme_eval(vals[1], env)
+        return vals[1]
     
     
     
