@@ -8,6 +8,52 @@
 
 ;;; *** Add more of your own here! ***
 
+(cond (#f 'nope)
+              ('a 'hi 'true)
+              (else 'wait))
+; expect True
+
+(let ((x 42)) x 1 2)
+; expect 2
+
+(let ((x 60) (b (lambda (x y) (+ x y))))
+      (list 'cs (b x 1) 'a)
+)
+; expect (cs 61 a)
+
+(define a ''60)
+(list 'cs (+ (car (cdr b)) 1) 'a)
+; expcet (cs 61 a)
+
+(define posneg?
+  (lambda (x)
+    (cond ((< x 0) 'neg)
+          ((> x 0) 'pos)
+          (else 'zero))
+  )
+)
+(posneg? -1)
+; expect neg
+(posneg? 1)
+; expect pos
+(posneg? 0)
+; expect zero
+
+(define factorial
+  (lambda (x)
+    (cond ((< x 0) 'invalid)
+          (else (if (<= x 1) 1 (* x (factorial (- x 1))))
+          )
+    )
+  )
+)
+(factorial -1)
+; expect invalid
+(factorial 0)
+; expect 1
+(factorial 10)
+; expect 3628800
+
 ;;; These are examples from several sections of "The Structure
 ;;; and Interpretation of Computer Programs" by Abelson and Sussman.
 
