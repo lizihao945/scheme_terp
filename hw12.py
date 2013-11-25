@@ -132,8 +132,35 @@ def interpret_mobile(s):
             return None         # Return None if s is not a valid mobile
     for t in ('Branch', 'Weight', 'Mobile'):
         "*** YOUR CODE HERE ***"
-    return None
-
+        pass 
+    cal, i = 0, 0
+    while True:
+        if s[i] is "(":
+            cal += 1
+            if cal == 0:
+                break
+        if s[i] is ")":
+            cal -= 1
+            if cal == 0:
+                break
+        if s[i] is "T":
+            if s[i+1] is "(" and s[i+2] is "T":
+                s = s.replace("T", "Mobile", 1)
+            elif s[i+1] is "(":
+                tmp = i + 1
+                fweight = True
+                while s[tmp] is not ")":
+                    tmp += 1
+                    if s[tmp] is "," and fweight:
+                        s = s.replace("T", "Branch", 1)
+                        fweight = False
+                        break
+                if fweight:
+                    s = s.replace("T", "Weight", 1)
+        
+        i += 1                   
+    return eval(s)
+    
 
 # Q3.
 
@@ -168,6 +195,10 @@ class Stream:
         [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
         """
         "*** YOUR CODE HERE ***"
+        while self._compute_rest is not None:
+            yield self.first
+            self = self.rest
+        
 
     def __getitem__(self, k):
         """Return the k-th element of the stream.
@@ -178,6 +209,10 @@ class Stream:
         9
         """
         "*** YOUR CODE HERE ***"
+        while k > 0:
+            self = self.rest
+            k -= 1
+        return self.first
 
 def increment_stream(s):
     """Increment all elements of a stream."""
@@ -201,6 +236,8 @@ def scale_stream(s, k):
     200
     """
     "*** YOUR CODE HERE ***"
+    return Stream(s.first * k, lambda: scale_stream(s.rest, k))
+    
 
 
 # Q5.
@@ -219,10 +256,14 @@ def merge(s0, s1):
         return s1
     elif s1 is Stream.empty:
         return s0
-
     e0, e1 = s0.first, s1.first
+    if e0 >= 100 or e1 >= 100:
+        return
     "*** YOUR CODE HERE ***"
-
+    if e0 <= e1:
+        return Stream(e0, merge(s0.rest, s1))
+    else:
+        return Stream(e1, merge(s0, s1.rest))
 def make_s():
     """Return a stream over all positive integers with only factors 2, 3, & 5.
 
@@ -232,6 +273,7 @@ def make_s():
     """
     def rest():
         "*** YOUR CODE HERE ***"
+        
     s = Stream(1, rest)
     return s
 
