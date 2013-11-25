@@ -74,7 +74,8 @@
 ;; be at most MAX-VALUE and there are at most MAX-PIECES partitions.
 (define (list-partitions total max-pieces max-value)
   ; *** YOUR CODE HERE ***
-  nil)
+  (cond (= total 0)
+
 
 ; Problem 19 tests rely on correct Problem 18.
 (sort-lists (list-partitions 5 2 4))
