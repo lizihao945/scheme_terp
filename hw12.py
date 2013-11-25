@@ -260,10 +260,16 @@ def merge(s0, s1):
     if e0 >= 100 or e1 >= 100:
         return
     "*** YOUR CODE HERE ***"
-    if e0 <= e1:
-        return Stream(e0, merge(s0.rest, s1))
+    def compute_rest_with_args(arg0, arg1):
+        def compute_rest():
+            return merge(arg0, arg1)
+        return compute_rest
+    if e0 < e1:
+        return Stream(e0, compute_rest_with_args(s0.rest, s1))
+    elif e0 > e1:
+        return Stream(e1, compute_rest_with_args(s0, s1.rest))
     else:
-        return Stream(e1, merge(s0, s1.rest))
+        return Stream(e0, compute_rest_with_args(s0.rest, s1.rest))
 def make_s():
     """Return a stream over all positive integers with only factors 2, 3, & 5.
 
@@ -273,7 +279,32 @@ def make_s():
     """
     def rest():
         "*** YOUR CODE HERE ***"
-        
+        def validate(x):
+            if x == 1:
+                return True
+            if x == 2:
+                return True
+            if x == 3:
+                return True
+            if x == 4:
+                return True
+            if x % 2 == 0:
+                return validate(x // 2)
+            if x % 3 == 0:
+                return validate(x // 3)
+            if x % 5 == 0:
+                return validate(x // 5)
+            return False
+        def filter_stream(s):
+            if s is Stream.empty:
+                return s
+            def compute_rest():
+                return filter_stream(s.rest)
+            if validate(s.first):
+                return Stream(s.first, compute_rest)
+            else:
+                return compute_rest()
+        return filter_stream(ints.rest)
     s = Stream(1, rest)
     return s
 
